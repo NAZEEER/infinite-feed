@@ -1,4 +1,10 @@
 .listContainer {
-    height: 700px;
-    overflow-y: auto;
+  height: 700px;
+  overflow-y: auto;
+}
+
+.feedItem {
+  height: 260px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
