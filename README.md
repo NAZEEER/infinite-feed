@@ -2,8 +2,6 @@
 
 A React and Vite product feed that combines paginated API loading with custom variable-height list virtualization.
 
-> Portfolio draft: this README is prepared for review. It has not been published to GitHub.
-
 ## Features
 
 - Loads products from the DummyJSON REST API in pages of 20 products.
