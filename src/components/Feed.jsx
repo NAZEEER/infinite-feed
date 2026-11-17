@@ -67,9 +67,7 @@ const Feed = () => {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(
-      `https://dummyjson.com/products?limit=${PAGE_SIZE}&skip=${skip}`
-    )
+    fetch(`https://dummyjson.com/products?limit=${PAGE_SIZE}&skip=${skip}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch");
@@ -109,14 +107,14 @@ const Feed = () => {
     };
   }, [skip]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const observer = new ResizeObserver((entries) => {
       const positionsBeforeChange = positionsRef.current;
       const currentScrollTop = scrollTopRef.current;
 
       const anchorIndex = findFirstBottomGreaterThan(
         positionsBeforeChange,
-        currentScrollTop
+        currentScrollTop,
       );
 
       const anchorProduct = products[anchorIndex];
@@ -140,12 +138,10 @@ const Feed = () => {
 
         const borderBoxSize = entry.borderBoxSize?.[0];
 
-        const nextHeight =
-          borderBoxSize?.blockSize ?? entry.contentRect.height;
+        const nextHeight = borderBoxSize?.blockSize ?? entry.contentRect.height;
 
         const previousHeight =
-          measurementsRef.current.get(productId) ??
-          ESTIMATED_ITEM_HEIGHT;
+          measurementsRef.current.get(productId) ?? ESTIMATED_ITEM_HEIGHT;
 
         if (Math.abs(previousHeight - nextHeight) < 0.5) {
           return;
@@ -195,38 +191,23 @@ const Feed = () => {
   }, [products, layoutVersion]);
 
   const totalHeight =
-    positions.length === 0
-      ? 0
-      : positions[positions.length - 1].bottom;
+    positions.length === 0 ? 0 : positions[positions.length - 1].bottom;
 
-  const visibleStartOffset = Math.max(
-    0,
-    scrollTop - OVERSCAN_PX
-  );
+  const visibleStartOffset = Math.max(0, scrollTop - OVERSCAN_PX);
 
-  const visibleEndOffset =
-    scrollTop + viewportHeight + OVERSCAN_PX;
+  const visibleEndOffset = scrollTop + viewportHeight + OVERSCAN_PX;
 
   const startIndex = Math.min(
-    findFirstBottomGreaterThan(
-      positions,
-      visibleStartOffset
-    ),
-    products.length
+    findFirstBottomGreaterThan(positions, visibleStartOffset),
+    products.length,
   );
 
   const endIndex = Math.min(
-    findFirstTopAtLeast(
-      positions,
-      visibleEndOffset
-    ) + 1,
-    products.length
+    findFirstTopAtLeast(positions, visibleEndOffset) + 1,
+    products.length,
   );
 
-  const visibleProducts = products.slice(
-    startIndex,
-    endIndex
-  );
+  const visibleProducts = products.slice(startIndex, endIndex);
 
   useLayoutEffect(() => {
     const listElement = listRef.current;
@@ -237,7 +218,7 @@ const Feed = () => {
     }
 
     const anchorIndex = products.findIndex(
-      (product) => product.id === pendingAnchor.id
+      (product) => product.id === pendingAnchor.id,
     );
 
     if (anchorIndex === -1 || !positions[anchorIndex]) {
@@ -292,8 +273,7 @@ const Feed = () => {
     const observer = resizeObserverRef.current;
 
     if (!element) {
-      const previousElement =
-        elementsRef.current.get(productId);
+      const previousElement = elementsRef.current.get(productId);
 
       if (previousElement && observer) {
         observer.unobserve(previousElement);
@@ -319,8 +299,7 @@ const Feed = () => {
     setScrollTop(nextScrollTop);
 
     const nearLoadedEnd =
-      nextScrollTop + clientHeight >=
-      totalHeight - OVERSCAN_PX;
+      nextScrollTop + clientHeight >= totalHeight - OVERSCAN_PX;
 
     if (nearLoadedEnd && hasMore && !isFetching) {
       setIsFetching(true);
@@ -330,6 +309,14 @@ const Feed = () => {
 
   return (
     <div>
+      <div class="projectTitle"></div>
+      <header className="pageHeader">
+        <h1>Infinite Feed</h1>
+        <p>
+          Loaded {products.length} products. Only {visibleProducts.length} cards
+          are in the page right now.
+        </p>
+      </header>
       <div
         ref={listRef}
         className="listContainer"
@@ -379,9 +366,7 @@ const Feed = () => {
             return (
               <div
                 key={product.id}
-                ref={(element) =>
-                  registerItemElement(product.id, element)
-                }
+                ref={(element) => registerItemElement(product.id, element)}
                 className="feedItem"
                 style={{
                   position: "absolute",
@@ -401,8 +386,9 @@ const Feed = () => {
                 />
 
                 <h2>{product.title}</h2>
-                <p>Price: {product.price}</p>
-                <p>Stock: {product.stock}</p>
+                <p className="description">{product.description}</p>
+                <p className="price">${product.price}</p>
+                <p>in stock: {product.stock}</p>
               </div>
             );
           })}
