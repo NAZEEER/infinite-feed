@@ -308,7 +308,7 @@ const Feed = () => {
   }
 
   return (
-    <div>s
+    <div>
       <div class="projectTitle"></div>
       <header className="pageHeader">
         <h1>Infinite Feed</h1>
